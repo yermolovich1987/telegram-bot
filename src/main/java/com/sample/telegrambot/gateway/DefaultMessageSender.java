@@ -3,6 +3,7 @@ package com.sample.telegrambot.gateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.K;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -15,20 +16,23 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.ArrayList;
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
+//@Component
+// @RequiredArgsConstructor
 // TODO How to implement localization.
 public class DefaultMessageSender implements MessageSender {
-  private final AbsSender sender;
+  private AbsSender sender;
+
+  @Autowired
+  void setSender(AbsSender sender) {
+    this.sender = sender;
+  }
 
   @Override
-  public void sendMessage(Message message) {
+  public void sendMessage(SendMessage message) {
     try {
-      sender.execute(SendMessage.builder()
-          .text("Отримане повідомлення:" + message.getText())
-          .chatId(String.valueOf(message.getChatId())).build());
+      sender.execute(message);
     } catch (TelegramApiException e) {
-       log.error("Failed to send response failed message!");
+      log.error("Failed to send response failed message!");
     }
   }
 
